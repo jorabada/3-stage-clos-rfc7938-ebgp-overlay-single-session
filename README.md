@@ -6,7 +6,7 @@ Config highlights:
 - MAC-VRF with multi-homing configured on all leaves.
 Inter-as-vpn command needed on the spines so that they import evpn routes (even if they have no ip-vrfs) and reflect them to the leaves.
 
-![](3-stage-clos.clab.drawio.png)
+![](3-stage.png)
 
 ## Configuration
 

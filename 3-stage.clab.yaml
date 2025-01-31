@@ -1,0 +1,83 @@
+name: 3-stage-clos
+prefix: ""
+
+topology:
+  defaults:
+    kind: nokia_srlinux
+  kinds:
+    nokia_srlinux:
+      image: srlinux:latest
+      startup-config: configs/__clabNodeName__.cli
+    linux:
+      image: ghcr.io/hellt/network-multitool
+      binds:
+        - configs-linux:/configs-linux
+  nodes:
+    leaf1:
+      type: ixrd3l
+    leaf2:
+      type: ixrd3l
+    leaf3:
+      type: ixrd3l
+    leaf4:
+      type: ixrd3l
+    spine1:
+      type: ixrd3l
+    spine2:
+      type: ixrd3l
+
+    s1:
+      kind: linux
+      exec:
+        - bash configs-linux/s1.sh
+    s2:
+      kind: linux
+      exec:
+        - bash configs-linux/s2.sh
+    s3:
+      kind: linux
+      exec:
+        - bash configs-linux/s3.sh
+    s4:
+      kind: linux
+      exec:
+        - bash configs-linux/s4.sh
+    s12:
+      kind: linux
+      exec:
+        - bash configs-linux/s12.sh
+    s23:
+      kind: linux
+      exec:
+        - bash configs-linux/s23.sh        
+    s34:
+      kind: linux
+      exec:
+        - bash configs-linux/s34.sh
+
+  links:
+    # leaf to spine links POD1
+    - endpoints: ["leaf1:e1-11", "spine1:e1-1"]
+    - endpoints: ["leaf1:e1-12", "spine2:e1-1"]
+    - endpoints: ["leaf2:e1-11", "spine1:e1-2"]
+    - endpoints: ["leaf2:e1-12", "spine2:e1-2"]
+
+    # leaf to spine links POD2
+    - endpoints: ["leaf3:e1-11", "spine1:e1-3"]
+    - endpoints: ["leaf3:e1-12", "spine2:e1-3"]
+    - endpoints: ["leaf4:e1-11", "spine1:e1-4"]
+    - endpoints: ["leaf4:e1-12", "spine2:e1-4"]
+
+    # single-homed client connection links
+    - endpoints: ["s1:eth1", "leaf1:e1-1"]
+    - endpoints: ["s2:eth1", "leaf2:e1-1"]
+    - endpoints: ["s3:eth1", "leaf3:e1-1"]
+    - endpoints: ["s4:eth1", "leaf4:e1-1"]
+
+    # dual-homed client connection links
+    - endpoints: ["s12:eth1", "leaf1:e1-2"]
+    - endpoints: ["s12:eth2", "leaf2:e1-2"]
+    - endpoints: ["s23:eth1", "leaf2:e1-3"]
+    - endpoints: ["s23:eth2", "leaf3:e1-3"]    
+    - endpoints: ["s34:eth1", "leaf3:e1-4"]
+    - endpoints: ["s34:eth2", "leaf4:e1-4"]
